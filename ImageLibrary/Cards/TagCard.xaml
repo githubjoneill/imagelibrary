@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid Padding="10"
+      xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:ImageLibrary.Model"
+             xmlns:viewmodel="clr-namespace:ImageLibrary.ViewModel"
+             x:DataType="model:Tag"
+             x:Class="ImageLibrary.Cards.TagCard">
+    <Frame Style="{StaticResource ControlCardView}">
+            <HorizontalStackLayout Spacing="8">
+                <Label
+                    Margin="6"
+                    Style="{StaticResource LargeLabel}"
+                    Text="{Binding Name}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start"
+                    />
+                <VerticalStackLayout VerticalOptions="Center">
+                    <Label 
+                        Text="{Binding InstancesCount, StringFormat='({0})'}"
+                        Style="{StaticResource SmallLabel}"
+                        VerticalOptions="Center" />
+
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+        </Frame>
+    </Grid>

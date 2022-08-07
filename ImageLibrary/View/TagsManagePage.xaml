@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ImageLibrary.View.TagsManagePage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:model="clr-namespace:ImageLibrary.Model"
+             xmlns:Card="clr-namespace:ImageLibrary.Cards"
+             xmlns:viewmodel="clr-namespace:ImageLibrary.ViewModel"
+             x:DataType="viewmodel:TagsManageViewModel"
+             Title="Tags Manage Page">
+    <ContentPage.Resources>
+        <Style TargetType="ScrollView">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor"
+                                        Value="LightSkyBlue" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <ResourceDictionary>
+            <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
+            <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+        </ResourceDictionary>
+
+    </ContentPage.Resources>
+    <ScrollView>
+        <Grid Margin="8,0"
+            RowDefinitions="*,*,*,*,*,*"
+            ColumnDefinitions="*,*"
+            VerticalOptions="Start">
+
+            <HorizontalStackLayout Grid.Row="0" Spacing="8">
+
+                <Image
+                Grid.Column="0"
+                Source="tags.png"
+                SemanticProperties.Description="Tags image"
+                HeightRequest="50"
+                HorizontalOptions="Center" />
+
+                <Label 
+                Text="Tag Management"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="28"
+                HorizontalOptions="Center" />
+            </HorizontalStackLayout>
+         
+
+           
+            <HorizontalStackLayout Spacing="5" Grid.Row="2" Margin="0,0,12,0">
+                <Entry Grid.Row="3" 
+                       x:Name="entryBox" 
+                       WidthRequest="250"
+                       HorizontalOptions="Start"
+                       Placeholder="Enter new tag value"
+                       TextTransform="Lowercase"
+                       ClearButtonVisibility="WhileEditing"
+                       Text="{Binding CurrentEntryValue}"
+                       ReturnType="Done"
+                       ReturnCommand="{Binding AddTagCommand, Mode=TwoWay}"
+                       ReturnCommandParameter="{Binding Source={x:Reference entryBox}, Path=Text}"
+                       />
+                
+                <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding Tags.Count, StringFormat='Showing: {0} tags'}" />
+                
+                <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Selected tags: {0}'}" 
+                     IsVisible="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"/>
+            </HorizontalStackLayout>
+
+
+
+           
+
+            <CollectionView
+                Grid.Row="5"
+                
+                ItemsSource="{Binding Tags}"
+                 SelectionMode="Single"
+               
+                HorizontalOptions="Start"
+                
+                >
+                <CollectionView.ItemTemplate>
+
+
+                    <DataTemplate  x:DataType="model:Tag">
+                        <Card:ImageTagCard  HorizontalOptions="Start" 
+                                            
+/>
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+
+            </CollectionView>
+
+
+            <ActivityIndicator
+            Grid.RowSpan="5"
+            HorizontalOptions="FillAndExpand"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="CenterAndExpand" />
+
+        </Grid>
+
+  
+
+        
+    </ScrollView>
+    
+</ContentPage>

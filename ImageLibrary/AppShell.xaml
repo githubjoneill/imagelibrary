@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ImageLibrary.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ImageLibrary"
+    xmlns:view="clr-namespace:ImageLibrary.View"
+    Title="Image Library"
+    Shell.FlyoutBehavior="Disabled">
+
+    <TabBar>
+
+        <Tab Title="Main" Icon="home.png">
+            <ShellContent
+                Shell.NavBarIsVisible="true"
+                 Icon="home.png"
+                Title="Home from Flyout"
+                ContentTemplate="{DataTemplate view:MainPage}"
+                Route="MainPage" />
+        </Tab>
+        <Tab Title="Images without tags" Icon="dotnet_bot.png">
+            <ShellContent
+                Shell.NavBarIsVisible="true"
+            
+                Title="Images without tags"
+                ContentTemplate="{DataTemplate view:ImagesWithoutTags}"
+                Route="ImagesWithoutTags" />
+        </Tab>
+        <Tab Title="Tags" Icon="tags.png">
+              <ShellContent
+                Shell.NavBarIsVisible="True"
+               
+                Title="Tags"
+                ContentTemplate="{DataTemplate view:TagsManagePage}"
+                Route="TagsManagePage" />
+       
+        </Tab>
+
+        
+           
+       
+ 
+   
+
+
+    </TabBar>
+
+
+    <!--<FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
+        <Tab Title="Domestic"
+             Icon="paw.png">
+            <ShellContent Title="Cats"
+                          Icon="cat.png"
+                        ontentTemplate="{DataTemplate view:MainPage}" />
+            <ShellContent Title="Dogs"
+                          Icon="dog.png"
+                          ContentTemplate="{DataTemplate local:DetailsPage}" />
+        </Tab>-->
+        <!--
+        Shell has implicit conversion operators that enable the Shell visual hierarchy to be simplified.
+        This is possible because a subclassed Shell object can only ever contain a FlyoutItem object or a TabBar object,
+        which can only ever contain Tab objects, which can only ever contain ShellContent objects.
+
+        The implicit conversion automatically wraps the ShellContent objects below in Tab objects.
+        -->
+        <!--<ShellContent Title="Main"
+                      Icon="ionislogo.png"
+                      ContentTemplate="{DataTemplate view:MainPage}" />
+        <ShellContent Title="Elephants"
+                      Icon="elephant.png"
+                      ContentTemplate="{DataTemplate view:MainPage}" />
+        <ShellContent Title="Bears"
+                      Icon="dotnet_bot.svg"
+                      ContentTemplate="{DataTemplate local:DetailsPage}" />
+    </FlyoutItem>-->
+
+</Shell>

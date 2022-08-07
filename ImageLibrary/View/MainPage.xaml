@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:ImageLibrary.Model"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodel="clr-namespace:ImageLibrary.ViewModel"
+             x:Class="ImageLibrary.View.MainPage"
+             Title="Images - Main page"
+             x:DataType="viewmodel:ImageInfoViewModel"
+             >
+    <ContentPage.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor"
+                                        Value="Silver" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <ResourceDictionary>
+            <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
+            <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+        </ResourceDictionary>
+
+    </ContentPage.Resources>
+    <Grid
+        ColumnDefinitions="*,*"
+        ColumnSpacing="5"
+        RowDefinitions="Auto,*,Auto"
+        RowSpacing="0">
+        <HorizontalStackLayout HorizontalOptions="Start" Spacing="10" Grid.ColumnSpan="2">
+            <SearchBar Placeholder="Search images by name or tag" 
+                   x:Name="searchBar"
+                   Margin="8,0,0,0"
+                   HorizontalOptions="Start" MinimumWidthRequest="300"
+                   SearchCommand="{Binding SearchImagesCommand}"
+                   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
+                   />
+            <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding ImageFiles.Count, StringFormat='Showing: {0} images'}" />
+            <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Selected: {0} images'}" 
+                    IsVisible="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"/>
+
+        </HorizontalStackLayout>
+       
+        <RefreshView
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Command="{Binding SearchImagesCommand}"
+            CommandParameter="{Binding Text, Source={x:Reference searchBar}}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView
+                ItemsSource="{Binding ImageFiles}"
+                SelectionMode="Multiple"
+                SelectedItems="{Binding SelectedImageFiles, Mode=TwoWay}"
+                SelectionChangedCommand="{Binding SelectionHasChangedCommand}"
+                SelectionChangedCommandParameter="{Binding .}"
+                ItemsLayout="VerticalGrid, 5"
+                >
+              
+                <CollectionView.ItemTemplate>
+                    
+                    <DataTemplate x:DataType="model:ImageFileInfo">
+                        <Grid Padding="10">
+                            <Frame HeightRequest="125" Style="{StaticResource CardView}">
+
+                                <Grid Padding="0" ColumnDefinitions="125,*">
+                                    <Image
+                                        Margin="8"
+                                        Aspect="AspectFit"
+                                        MaximumHeightRequest="125"
+                                        Source="{Binding Image}" 
+                                        MaximumWidthRequest="125" >
+                                        <!--<Image.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=GoToDetailsCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                        </Image.GestureRecognizers>-->
+
+                                    </Image>
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        VerticalOptions="Start"
+                                        Padding="8">
+                                        <ImageButton VerticalOptions="Start" HorizontalOptions="End" WidthRequest="16"
+                         Source="edit_pencil.png" BorderColor="Transparent" Margin="0,0,8,0"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=GoToDetailsFromIdCommand}"
+                                        CommandParameter="{Binding ID}"/>
+
+                                        <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}" />
+                                       
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                   
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <HorizontalStackLayout Spacing="10" Grid.Row="2" Grid.ColumnSpan="2">
+            <Button
+            Margin="8"
+            Command="{Binding AddImageCommand}"
+            IsEnabled="True"
+            Style="{StaticResource ButtonOutline}"
+            Text="Add new Image" />
+            
+            <Button
+            Margin="8"
+            Command="{Binding GetImagesCommand}"
+            IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Tag selected images" />
+
+            <Button
+            Margin="8"
+            Command="{Binding DeleteSelectedImagesCommand}"
+            IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Delete selected image files" />
+
+            <Button
+            Margin="8"
+            Command="{Binding RemoveSelectedImagesCommand}"
+            IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Remove from library" />
+
+        </HorizontalStackLayout>
+       
+
+        <ActivityIndicator
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="2"
+            HorizontalOptions="FillAndExpand"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="CenterAndExpand" />
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,24 @@
+﻿[
+  {
+    "Name": "Baboon",
+    "Location": "Africa & Asia",
+    "Description": "Baboons are African and Arabian Old World monkeys belonging to the genus Papio, part of the subfamily Cercopithecinae.",
+    "Image": "https://raw.githubusercontent.com/jamesmontemagno/app-monkeys/master/baboon.jpg",
+    "FileName": "baboon.jpg"
+  },
+  {
+    "Name": "Capuchin Monkey",
+    "Location": "Central & South America",
+    "Description": "The capuchin monkeys are New World monkeys of the subfamily Cebinae. Prior to 2011, the subfamily contained only a single genus, Cebus.",
+    "Image": "https://raw.githubusercontent.com/jamesmontemagno/app-monkeys/master/capuchin.jpg",
+    "FileName": "capuchin.jpg"
+  },
+  {
+    "Name": "Code Monkey",
+    "Location": "Central & South America",
+    "Description": "Test to see if remote svg files can be loaded.",
+    "Image": "C:\\junk\\dotnet_bot.svg",
+    "FileName": "codeminkey.jpg"
+  }
+
+]
