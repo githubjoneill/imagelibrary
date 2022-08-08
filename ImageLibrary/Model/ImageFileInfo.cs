@@ -12,7 +12,7 @@ public class ImageFileInfo
     public string Name { get; set; }
 
     [Indexed]
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;//Optional notes. (will be used in searches)
 
     public string Image { get; set; } = string.Empty;// Full file path or file url.
 

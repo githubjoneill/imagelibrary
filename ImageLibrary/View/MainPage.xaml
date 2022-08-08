@@ -77,23 +77,18 @@
                                         MaximumHeightRequest="125"
                                         Source="{Binding Image}" 
                                         MaximumWidthRequest="125" >
-                                        <!--<Image.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=GoToDetailsCommand}"
-                                        CommandParameter="{Binding .}"/>
-                                        </Image.GestureRecognizers>-->
-
+    
                                     </Image>
                                     <VerticalStackLayout
                                         Grid.Column="1"
                                         VerticalOptions="Start"
                                         Padding="8">
-                                        <ImageButton VerticalOptions="Start" HorizontalOptions="End" WidthRequest="16"
-                         Source="edit_pencil.png" BorderColor="Transparent" Margin="0,0,8,0"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=GoToDetailsFromIdCommand}"
-                                        CommandParameter="{Binding ID}"/>
+                                        <ImageButton VerticalOptions="Start" HorizontalOptions="End" WidthRequest="18"
+                                             Source="edit_pencil.png" BorderColor="Transparent" Margin="0,0,8,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=GoToDetailsFromIdCommand}"
+                                            CommandParameter="{Binding ID}"/>
 
-                                        <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}" />
+                                        <Label Style="{StaticResource MediumLabel}" Text="{Binding Name}" />
                                        
                                     </VerticalStackLayout>
                                 </Grid>

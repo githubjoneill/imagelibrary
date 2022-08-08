@@ -10,7 +10,7 @@
     x:DataType="viewmodel:ImageDetailsViewModel" >
     <ScrollView>
         
-            <Grid ColumnDefinitions="Auto,*,*" RowDefinitions="Auto, Auto,*,Auto">
+            <Grid ColumnDefinitions="Auto,*,*" RowDefinitions="Auto, Auto,Auto,Auto">
              
                 <Image
                         Grid.Column="1"
@@ -28,48 +28,74 @@
                 <Label Style="{StaticResource SmallLabel}" Text="Name"  />
                 <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Name}" ClearButtonVisibility="WhileEditing" />
                 <Label Style="{StaticResource SmallLabel}" Text="Notes (Optional)." Margin="0,12,0,0" />
-                <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Description}" ClearButtonVisibility="WhileEditing" PlaceholderColor="LightGray" Placeholder="Tip: words will be used during image searches" />
+                <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Description}" ClearButtonVisibility="WhileEditing" PlaceholderColor="LightGray" Placeholder="Tip: will be used when searching for images " />
                 <Label Style="{StaticResource SmallLabel}" Text="Notes (Optional)." Margin="0,12,0,0" />
                 <Label Style="{StaticResource SmallLabel}" Text="Source file location." Margin="0,12,0,0" />
-                <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Location}"  IsEnabled="False"/>
+                <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Location}" IsReadOnly="True"  TextColor="Gray" />
                
                 <Label Style="{StaticResource MicroLabel}" Text="{Binding FullyLoadedImage.ImageFileInfo.ID, StringFormat='ID: {0}'}" />
-                <Label Style="{StaticResource MediumLabel}" Text="Tags" Margin="0,24,0,0" />
+                <HorizontalStackLayout Spacing="8">
+                    <Label Style="{StaticResource MediumLabel}" Text="Tags" Margin="0,48,0,0" FontAttributes="Bold" />
+                    <Label Style="{ StaticResource SmallLabel}" Text="(Assign from existing tags below, or enter a new tag if it doesn't already exist.)" VerticalOptions="End" TextColor="Gray"></Label>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="8">
+                    <Entry Text="{Binding TagAddedText}" ClearButtonVisibility="WhileEditing" Placeholder="Enter new or existing tag value." PlaceholderColor="LightGray"
+                           TextTransform="Lowercase"
+                           ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=EnterNewTagTextCommand}"
+                           ReturnCommandParameter="{Binding TagAddedText}" MinimumWidthRequest="90" MaximumWidthRequest="200"
+                           />
+                         
+                  
+                </HorizontalStackLayout>
             </VerticalStackLayout>
 
-            <CollectionView Grid.Row="1" Grid.Column="0"
-                             ItemsSource="{Binding Tags}" 
-                             ItemsLayout="HorizontalList" VerticalOptions="Start"
-                             Margin="8,0,0,0">
+            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
                 
+                <CollectionView 
+                             ItemsSource="{Binding Tags}" 
+                             ItemsLayout="VerticalList" 
+                            VerticalOptions="Start"
+                             Margin="8,0,0,0">
+              
                 <CollectionView.ItemTemplate>
                     <DataTemplate  x:DataType="model:Tag">
                         <!--<Card:ImageTagCard  HorizontalOptions="Start" />-->
                         <!--<Label Text="{Binding Name}" VerticalOptions="Start" HorizontalOptions="Start" />-->
-
-                        <Frame Style="{StaticResource ControlCardView}">
-                        <HorizontalStackLayout Spacing="6">
+                      
+                        <Frame Style="{StaticResource ControlCardView}" >
+                        <HorizontalStackLayout Spacing="4">
 
                             <Label
-                        Margin="6"
-                        Style="{StaticResource LargeLabel}"
-                        Text="{Binding Name}"
-                        VerticalOptions="Center"
-                        HorizontalOptions="Start"
-                        />
+                                Margin="6"
+                                Style="{StaticResource MediumLabel}"
+                                Text="{Binding Name}"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Start" />
 
-
-                                <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="14" WidthRequest="14"
-                             Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,8,0"
-                             Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=RemoveTagCommand}"
-                             CommandParameter="{Binding  .}" />
+                             <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="16" WidthRequest="16"
+                                 Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,6,0"
+                                 Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=RemoveTagCommand}"
+                                 CommandParameter="{Binding  .}" />
 
                             </HorizontalStackLayout>            
                         </Frame>
+                      
+                       
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
                 
             </CollectionView>
+
+                <Button  Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel"
+                        Command="{Binding SaveChangesCommand}"
+                        HorizontalOptions="Center" 
+                        WidthRequest="400" 
+                        Margin="8"
+                        Style="{StaticResource ButtonOutline}"/>
+            </VerticalStackLayout>
+            
+                
             <CollectionView Grid.Row="1" Grid.Column="1"
                              ItemsSource="{Binding AvailableTags}" 
                              ItemsLayout="VerticalList">
@@ -78,20 +104,17 @@
                         <Frame Style="{StaticResource ControlCardView}" Margin="2">
                             <HorizontalStackLayout Spacing="6" Margin="2" >
                                 <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18"
-                                     Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2,0,6,0"
+                                     Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2,0,2,0"
                                      Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=AddTagCommand}"
                                      CommandParameter="{Binding .}" />
                                 <Label
-                                    Margin="6,0,10,4"
-                                    Style="{StaticResource LargeLabel}"
+                                    Margin="0,0,5,4"
+                                    Style="{StaticResource MediumLabel}"
                                     Text="{Binding Name}"
                                     VerticalOptions="Center"
                                     HorizontalOptions="Start"
                                     />
-                                <!--<Label 
-                                    Text="{Binding InstancesCount, StringFormat='({0})'}"
-                                    Style="{StaticResource SmallLabel}" TextColor="Gray"
-                                    VerticalOptions="Center" />-->    
+                                
 
 
 
@@ -102,12 +125,7 @@
 
             </CollectionView>
 
-            <Button Grid.Row="3" Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel"
-                        Command="{Binding SaveChangesCommand}"
-                        HorizontalOptions="Center" 
-                        WidthRequest="400" 
-                        Margin="8"
-                        Style="{StaticResource ButtonOutline}"/>
+            
 
         </Grid>
     </ScrollView>

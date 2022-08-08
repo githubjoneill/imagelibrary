@@ -33,17 +33,31 @@ public class TagService
 
         ImagesDatabase database = await ImagesDatabase.Instance;
         
-        //Tag defaultTag =new Tag();
-        //defaultTag.Name = "Food";
-        //await database.SaveTagItemAsync(defaultTag);
+
         var allRecs = await database.GetAllTagAsync();
 
-        foreach (var tag in allRecs)
-        {
-            tagsList.Add(tag);
-        }
+        var tagAssignments = await database.GetImageTagsAllAsync();
 
-        //tagsList.Sort();
+
+        if (tagAssignments ==null)
+        {
+            foreach (var tag in allRecs)
+            {  
+                tagsList.Add(tag);
+            }
+        }
+        else
+        {
+            foreach (var tag in allRecs)
+            {
+                var instances = (from t in tagAssignments where t.TagId == tag.ID select t.ID).Count();
+                tag.InstancesCount = instances;
+                tagsList.Add(tag);
+            }
+        }
+        
+
+       
 
         return tagsList?? new List<Tag>();
 
@@ -60,7 +74,18 @@ public class TagService
 
         ImagesDatabase db = await ImagesDatabase.Instance;
        var rec = await db.SaveTagItemAsync(tagObj);
-        tagObj.ID = rec;
+
+        if (tagObj.ID <1)
+        {
+            var tagLookup =await db.GetTagItemByNameAsync(tag);
+            if (tagLookup !=null)
+            {
+                tagObj.ID = tagLookup.ID;//rec;
+            }
+        }
+        //Belt and braces check if the ID value wasn't set.
+        
+       
         return tagObj;// reply;
     }
 

@@ -32,11 +32,11 @@
     </ContentPage.Resources>
     <ScrollView>
         <Grid Margin="8,0"
-            RowDefinitions="*,*,*,*,*,*"
+            RowDefinitions="Auto,Auto,Auto,Auto,*,*"
             ColumnDefinitions="*,*"
             VerticalOptions="Start">
 
-            <HorizontalStackLayout Grid.Row="0" Spacing="8">
+            <HorizontalStackLayout Grid.Row="0" Spacing="8" >
 
                 <Image
                 Grid.Column="0"
@@ -54,8 +54,8 @@
          
 
            
-            <HorizontalStackLayout Spacing="5" Grid.Row="2" Margin="0,0,12,0">
-                <Entry Grid.Row="3" 
+            <HorizontalStackLayout Spacing="5" Grid.Row="2" Margin="0,0,30,0">
+                <Entry 
                        x:Name="entryBox" 
                        WidthRequest="250"
                        HorizontalOptions="Start"
@@ -91,9 +91,29 @@
 
 
                     <DataTemplate  x:DataType="model:Tag">
-                        <Card:ImageTagCard  HorizontalOptions="Start" 
-                                            
-/>
+                        <Frame Style="{StaticResource ControlCardView}" HorizontalOptions="Start" Margin="2,2,0,4">
+                            <HorizontalStackLayout Spacing="6">
+
+                                <Label
+                                    Margin="4,0,2,0"
+                                    Style="{StaticResource LargeLabel}"
+                                    Text="{Binding Name}"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Start"
+                        />  
+                                <Label 
+                            Text="{Binding InstancesCount, StringFormat='({0})'}"
+                            Style="{StaticResource SmallLabel}" TextColor="LightSlateGray"
+                            VerticalOptions="Center" /> 
+
+                        <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="14" WidthRequest="14"
+                            Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,4,0"
+                            Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:TagsManageViewModel}}, Path=RemoveTagCommand}"
+                            CommandParameter="{Binding  Name}" />  
+
+                            </HorizontalStackLayout>
+                        </Frame>
+
                     </DataTemplate>
 
                 </CollectionView.ItemTemplate>

@@ -183,6 +183,17 @@ namespace ImageLibrary.Data
             return reply;
         }
 
+        public Task<List<ImageTag>> GetImageTagsAllAsync()
+        {
+
+
+            var reply = Database.Table<ImageTag>().ToListAsync();
+
+
+            return reply;
+        }
+
+
         public Task<int> SaveImageTagItemAsync (ImageTag item)
         {
             if (item.ID != 0)

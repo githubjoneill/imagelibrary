@@ -23,6 +23,9 @@ public partial class ImageDetailsViewModel: BaseViewModel
 
     [ObservableProperty]
     public FullyLoadedImageObject fullyLoadedImage;
+
+    [ObservableProperty]
+    string tagAddedText;
  
 
     public ImageDetailsViewModel(ImageInfoService infoService, TagService tagsService)
@@ -157,5 +160,48 @@ public partial class ImageDetailsViewModel: BaseViewModel
         AvailableTags = AvailableTags.OrderBy(a => a.Name).ToObservableCollection();
 
         Tags.Remove(tag);
+    }
+
+    [RelayCommand]
+    async Task EnterNewTagText (string newTagText)
+    {
+        if (string.IsNullOrEmpty(this.TagAddedText))
+        {
+            return;
+        }
+
+        this.IsBusy = true;
+
+        try
+        {
+            var matchedTag = (from t in AvailableTags where t.Name.Equals(TagAddedText, StringComparison.OrdinalIgnoreCase) select t).FirstOrDefault();
+            if (matchedTag == null)
+            {
+                // Create a new tag and save it to db /local observable collection.
+               var thisNewTag =  await tagService.AddTag(newTagText);
+               if (thisNewTag != null && thisNewTag.ID > 0)
+                {
+                    Tags.Add(thisNewTag);
+                }
+              
+            }
+            else
+            {
+                AddTag(matchedTag);
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        finally
+        {
+            TagAddedText = null;
+            this.IsBusy = false;
+        }
+
+       
+
     }
 }
