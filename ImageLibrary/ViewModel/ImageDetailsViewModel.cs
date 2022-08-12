@@ -1,5 +1,7 @@
 ﻿
 using CommunityToolkit.Maui.Core.Extensions;
+using CommunityToolkit.Mvvm.Messaging;
+using ImageLibrary.Messages;
 using ImageLibrary.Services;
 using ImageLibrary.View;
 
@@ -30,33 +32,24 @@ public partial class ImageDetailsViewModel: BaseViewModel
 
     public ImageDetailsViewModel(ImageInfoService infoService, TagService tagsService)
     {
-        var abc = infoService.GetType();
+       // var abc = infoService.GetType();
         this.imageInfoService = infoService;
         this.tagService = tagsService;
-        
-        //this.Tags = new ObservableCollection<Tag>();
-        //this.availableTags = new ObservableCollection<Tag>();
-
-        //Task.Run(() => GetTagsAsync());
     }
 
 
     [RelayCommand]
-    async Task EditDetails()
+    async Task Delete()
     {
         try
         {
-            var abc = fullyLoadedImage.ImageFileInfo.Name;
-            //await map.OpenAsync(Monkey.Latitude, Monkey.Longitude, new MapLaunchOptions
-            //{
-            //    Name = Monkey.Name,
-            //    NavigationMode = NavigationMode.None
-            //});
+           // var abc = fullyLoadedImage.ImageFileInfo.Name;
+            WeakReferenceMessenger.Default.Send(new DeletedImageMessage(fullyLoadedImage.ImageFileInfo));  
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Unable to load image information {ex.Message}");
-            await Shell.Current.DisplayAlert("Error, no Maps app!", ex.Message, "OK");
+            Debug.WriteLine($"Unable to delete image information {ex.Message}");
+            await Shell.Current.DisplayAlert("Error, cannot delete!", ex.Message, "OK");
         }
     }
 
@@ -67,14 +60,20 @@ public partial class ImageDetailsViewModel: BaseViewModel
         {
             var img = fullyLoadedImage.ImageFileInfo;
            var updatedId = await imageInfoService.UpdateImage(img);
+            WeakReferenceMessenger.Default.Send(new ChangedImageMessage(fullyLoadedImage.ImageFileInfo));
 
             var existingTagIds =await imageInfoService.GetImageTagIdsForImageId(fullyLoadedImage.ImageFileInfo.ID);
 
             if (Tags?.Count > 0)//fullyLoadedImage.Tags?.Count
             {
-                foreach (var thisTag in Tags)//fullyLoadedImage.
+                foreach (var thisTag in Tags.Where(t => t !=null))//fullyLoadedImage.
                 {
-                    var matchExisting = (from t in existingTagIds where t.TagId == thisTag.ID select t).FirstOrDefault();
+                    ImageTag matchExisting = null;
+                    if (existingTagIds?.Count >0)
+                    {
+                        matchExisting = (from t in existingTagIds where t.TagId == thisTag.ID select t).FirstOrDefault();
+                    }
+                    
                     if (matchExisting is null)
                     {
                         ImageTag newImgTag = new ImageTag() { ImageId = fullyLoadedImage.ImageFileInfo.ID, TagId = thisTag.ID };
@@ -84,17 +83,19 @@ public partial class ImageDetailsViewModel: BaseViewModel
             }
 
             //Check for removed tags
-            foreach (ImageTag existingItem in existingTagIds)
+            if (existingTagIds !=null)
             {
-                var matchExisting = (from t in Tags where t.ID == existingItem.TagId select t).FirstOrDefault();//fullyLoadedImage.
-                if (matchExisting is null)
+                foreach (ImageTag existingItem in existingTagIds)
                 {
-                    //Remove from db.
-                    var idDeleted = await imageInfoService.RemoveImageTagAsync(existingItem);
+                    var matchExisting = (from t in Tags where t!=null && t.ID == existingItem.TagId select t).FirstOrDefault();//fullyLoadedImage.
+                    if (matchExisting is null)
+                    {
+                        //Remove from db.
+                        var idDeleted = await imageInfoService.RemoveImageTagAsync(existingItem);
+                    }
                 }
             }
-
-
+          
             if (updatedId >0)
             {
                 await Shell.Current.GoToAsync("..");
@@ -147,8 +148,6 @@ public partial class ImageDetailsViewModel: BaseViewModel
        // await Task.Delay(1);
         Tags.Add(tag);//
 
-       
-
         AvailableTags.Remove(tag);
     }
 
@@ -160,6 +159,12 @@ public partial class ImageDetailsViewModel: BaseViewModel
         AvailableTags = AvailableTags.OrderBy(a => a.Name).ToObservableCollection();
 
         Tags.Remove(tag);
+    }
+
+    [RelayCommand]
+    void CancelGoHome ()
+    {
+        Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]

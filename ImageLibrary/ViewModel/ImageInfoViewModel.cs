@@ -1,4 +1,6 @@
-﻿using ImageLibrary.Data;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using ImageLibrary.Data;
+using ImageLibrary.Messages;
 using ImageLibrary.Services;
 //using Java.Security;
 //using ImageLibrary.View;
@@ -7,7 +9,7 @@ namespace ImageLibrary.ViewModel;
 
 
 
-public partial class ImageInfoViewModel: BaseViewModel
+public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageMessage>, IRecipient<ChangedImageMessage>
 {
 
     
@@ -29,6 +31,9 @@ public partial class ImageInfoViewModel: BaseViewModel
 
         Task.Run(() => GetImagesAsync());
 
+        WeakReferenceMessenger.Default.Register<DeletedImageMessage>(this);
+        WeakReferenceMessenger.Default.Register<ChangedImageMessage>(this);
+      
         //this.SelectedImageFiles.CollectionChanged += SelectedImageFiles_CollectionChanged;
 
     }
@@ -140,7 +145,7 @@ public partial class ImageInfoViewModel: BaseViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand]//(CanExecute =nameof(CanAddFile))
     async Task AddImage()
     {
         var customFileType = new FilePickerFileType(
@@ -159,7 +164,7 @@ public partial class ImageInfoViewModel: BaseViewModel
 
         try
         {
-            IsBusy = true;
+           // IsBusy = true;
             ImagesDatabase db = await ImagesDatabase.Instance;
             var multiResults = await FilePicker.Default.PickMultipleAsync(options);
             if (multiResults.Any())
@@ -231,7 +236,7 @@ public partial class ImageInfoViewModel: BaseViewModel
 
                     }
                 }
-            }
+            }// any filepicker FileResult records
  
         }
         catch (Exception ex)
@@ -244,7 +249,7 @@ public partial class ImageInfoViewModel: BaseViewModel
         finally
         {
             IsBusy=false;
-            isRefreshing = false;
+            IsRefreshing = false;
 
 
         }
@@ -377,6 +382,94 @@ public partial class ImageInfoViewModel: BaseViewModel
     }
 
     [RelayCommand]
+    async Task DeleteImage (ImageFileInfo imgToDelete)
+    {
+        try
+        {
+            //if (this.SelectedImageFiles.Count == 0)
+            //{
+            //    return;
+            //}
+            ImagesDatabase db = await ImagesDatabase.Instance;
+            int totalDeleted = 0;
+            
+            
+           
+            {
+                
+                var sourceFilePath = imgToDelete.Location;
+                var recsRemovedFromDb = await db.DeleteImageItemAsync(imgToDelete);
+                var existingImg = (from i in ImageFiles where i.ID == imgToDelete.ID select i).FirstOrDefault();
+                if (existingImg != null)
+                {
+                    var wasRemoved = ImageFiles.Remove(existingImg);
+                }
+                if (recsRemovedFromDb > 0)
+                {
+                    totalDeleted++;
+                    //Delete this file from the file system
+                    if (System.IO.File.Exists(sourceFilePath))
+                    {
+                        System.IO.File.Delete(sourceFilePath);
+
+                        if (!System.IO.File.Exists(sourceFilePath))
+                        {
+                            totalDeleted += 1;
+                            
+                               
+                           
+                            if (sourceFilePath.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                            {
+                                //Remove the supporting png file
+                                if (System.IO.File.Exists(imgToDelete.Image))
+                                {
+                                    System.IO.File.Delete(imgToDelete.Image);
+                                }
+                            }
+                        }
+                    }
+
+                    
+                   
+                  //  OnPropertyChanged("ImageFiles");
+                    if (SelectedImageFiles.Contains(imgToDelete))
+                    {
+                        SelectedImageFiles.Remove(imgToDelete);
+                    }
+
+                    if (Shell.Current.CurrentPage.GetType() == typeof(DetailsPage))
+                    {
+                        await Shell.Current.GoToAsync("..");
+                    }
+                }
+
+            }
+
+            if (totalDeleted ==0)
+            {
+                await Shell.Current.DisplayAlert($"Could not delete {imgToDelete.Name}", "Please verify that the selected files exist in your file system.", "OK");
+            }
+            else
+            {
+                //Refresh the current listing?
+                //SearchImages
+               // await GetImagesAsync();
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            //throw;
+            await Shell.Current.DisplayAlert($"Error trying to delete file {imgToDelete.Name}", ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
      private void  SelectionHasChanged(Object param)//object sender, SelectionChangedEventArgs e
     {
       
@@ -391,10 +484,6 @@ public partial class ImageInfoViewModel: BaseViewModel
         if (imageFile == null)
             return;
 
-
-        //TODO: Load the selected image file with associated tags
-        //List<Tag> myTags = null;// new List<Tag>();
-        //var loadedImageInfo = new FullyLoadedImageObject(imageFile,myTags,null);
         var loadedImageInfo =await imageInfoService.GetFullyLoadedImageFromId(imageFile.ID);
 
        await Shell.Current.GoToAsync(nameof(DetailsPage), true, new Dictionary<string, object>
@@ -411,11 +500,6 @@ public partial class ImageInfoViewModel: BaseViewModel
         if (imageFileId == 0)
             return;
 
-
-        //TODO: Load the selected image file with associated tags
-        //List<Tag> myTags = null;// new List<Tag>();
-        //var loadedImageInfo = new FullyLoadedImageObject(imageFile,myTags,null);
-
         var loadedImageInfo = await imageInfoService.GetFullyLoadedImageFromId(imageFileId);
 
         await Shell.Current.GoToAsync(nameof(DetailsPage), true, new Dictionary<string, object>
@@ -426,4 +510,35 @@ public partial class ImageInfoViewModel: BaseViewModel
 
     }
 
+    private bool CanAddFile()
+    {
+        return true;
+    }
+
+    void IRecipient<DeletedImageMessage>.Receive(DeletedImageMessage message)
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            var imgToDelete = message.Value;// m.Value;
+            await DeleteImage(imgToDelete);
+        });
+    }
+
+    void IRecipient<ChangedImageMessage>.Receive(ChangedImageMessage message)
+    {
+        MainThread.BeginInvokeOnMainThread( () =>
+        {
+            var changedImage = message.Value;
+            var imgInCollection = (from i in this.ImageFiles where i.ID== changedImage.ID select i).FirstOrDefault();
+
+            if (imgInCollection !=null)
+            {
+                ImageFiles.Remove(imgInCollection);
+                
+            }
+
+            ImageFiles.Add(changedImage);
+
+        });
+    }
 }

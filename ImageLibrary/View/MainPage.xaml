@@ -27,6 +27,7 @@
         <ResourceDictionary>
             <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
             <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
 
     </ContentPage.Resources>
@@ -42,30 +43,32 @@
                    HorizontalOptions="Start" MinimumWidthRequest="300"
                    SearchCommand="{Binding SearchImagesCommand}"
                    SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
+                    
                    />
             <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding ImageFiles.Count, StringFormat='Showing: {0} images'}" />
             <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Selected: {0} images'}" 
                     IsVisible="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"/>
 
         </HorizontalStackLayout>
-       
+
+
         <RefreshView
             Grid.Row="1"
             Grid.ColumnSpan="2"
             Command="{Binding SearchImagesCommand}"
             CommandParameter="{Binding Text, Source={x:Reference searchBar}}"
             IsRefreshing="{Binding IsRefreshing}">
+
             <CollectionView
-                ItemsSource="{Binding ImageFiles}"
+                ItemsSource="{Binding ImageFiles, Mode=TwoWay}"
                 SelectionMode="Multiple"
                 SelectedItems="{Binding SelectedImageFiles, Mode=TwoWay}"
                 SelectionChangedCommand="{Binding SelectionHasChangedCommand}"
                 SelectionChangedCommandParameter="{Binding .}"
                 ItemsLayout="VerticalGrid, 5"
                 >
-              
+
                 <CollectionView.ItemTemplate>
-                    
                     <DataTemplate x:DataType="model:ImageFileInfo">
                         <Grid Padding="10">
                             <Frame HeightRequest="125" Style="{StaticResource CardView}">
@@ -77,7 +80,7 @@
                                         MaximumHeightRequest="125"
                                         Source="{Binding Image}" 
                                         MaximumWidthRequest="125" >
-    
+
                                     </Image>
                                     <VerticalStackLayout
                                         Grid.Column="1"
@@ -89,25 +92,24 @@
                                             CommandParameter="{Binding ID}"/>
 
                                         <Label Style="{StaticResource MediumLabel}" Text="{Binding Name}" />
-                                       
+
                                     </VerticalStackLayout>
                                 </Grid>
                             </Frame>
                         </Grid>
                     </DataTemplate>
-                   
+
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </RefreshView>
-
         <HorizontalStackLayout Spacing="10" Grid.Row="2" Grid.ColumnSpan="2">
             <Button
             Margin="8"
+            Text="Add image(s)"
             Command="{Binding AddImageCommand}"
-            IsEnabled="True"
-            Style="{StaticResource ButtonOutline}"
-            Text="Add new Image" />
-            
+                Style="{StaticResource ButtonOutline}"
+             />
+
             <Button
             Margin="8"
             Command="{Binding GetImagesCommand}"

@@ -63,6 +63,24 @@ public class TagService
 
     }
 
+    public async Task<List<ImageTag>> GetImageTagsForImageId(int imageId)
+    {
+
+        ImagesDatabase database = await ImagesDatabase.Instance;
+        var tagsForImageId = await database.GetImageTagsFromImageIdAsync(imageId);
+
+        return tagsForImageId ?? new List<ImageTag>();
+    }
+
+    public async Task<List<ImageTag>> GetImageTagsForTagId(int tagId)
+    {
+
+        ImagesDatabase database = await ImagesDatabase.Instance;
+        var tagsForImageId = await database.GetImageTagsFromTagIdAsync(tagId);
+
+        return tagsForImageId ?? new List<ImageTag>();
+    }
+
     public async Task<Tag> AddTag(string tag)
     {
         if (string.IsNullOrEmpty(tag))
@@ -96,12 +114,27 @@ public class TagService
             return 0;
         }
 
-        
 
+        int recsUpdated = 0;
         ImagesDatabase db = await ImagesDatabase.Instance;
         var allRecs = await db.GetAllTagAsync();
         var item = (from a in allRecs where a.Name.ToLower() == tag.ToLower() select a).FirstOrDefault();
-        var recsUpdated = await db.DeleteTagItemAsync(item);
+
+        if (item != null)
+        {
+            var tagsForImageId = await db.GetImageTagsFromTagIdAsync(item.ID);
+
+            if (tagsForImageId != null)
+            {
+                foreach (var tagItem in tagsForImageId)
+                {
+                    var idDeleted = await db.DeleteImageTagItemAsync(tagItem);
+                } 
+                
+            }
+            recsUpdated = await db.DeleteTagItemAsync(item);
+        }
+       
 
         return recsUpdated;// reply;
     }

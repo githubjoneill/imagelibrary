@@ -10,26 +10,26 @@
     x:DataType="viewmodel:ImageDetailsViewModel" >
     <ScrollView>
         
-            <Grid ColumnDefinitions="Auto,*,*" RowDefinitions="Auto, Auto,Auto,Auto">
+            <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto, Auto,*">
              
                 <Image
-                        Grid.Column="1"
+                        Grid.Column="2"
+                        Grid.Row="0"
                         Aspect="AspectFit"
                         MaximumHeightRequest="400"
                         MaximumWidthRequest="400"
-                        HorizontalOptions="Center"
+                        HorizontalOptions="Start"
                         VerticalOptions="Center"
                         Source="{Binding FullyLoadedImage.ImageFileInfo.Image}"
                         />
 
-                <!--<Label Text="{Binding ImageFileInfo.FileName}" Grid.Column="0"/>-->
 
             <VerticalStackLayout Grid.Row="0" Grid.Column="0" Padding="10,15,8,20" Spacing="10">
                 <Label Style="{StaticResource SmallLabel}" Text="Name"  />
                 <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Name}" ClearButtonVisibility="WhileEditing" />
                 <Label Style="{StaticResource SmallLabel}" Text="Notes (Optional)." Margin="0,12,0,0" />
                 <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Description}" ClearButtonVisibility="WhileEditing" PlaceholderColor="LightGray" Placeholder="Tip: will be used when searching for images " />
-                <Label Style="{StaticResource SmallLabel}" Text="Notes (Optional)." Margin="0,12,0,0" />
+               
                 <Label Style="{StaticResource SmallLabel}" Text="Source file location." Margin="0,12,0,0" />
                 <Entry  Text="{Binding FullyLoadedImage.ImageFileInfo.Location}" IsReadOnly="True"  TextColor="Gray" />
                
@@ -54,8 +54,9 @@
                 
                 <CollectionView 
                              ItemsSource="{Binding Tags}" 
-                             ItemsLayout="VerticalList" 
+                             ItemsLayout="HorizontalList" 
                             VerticalOptions="Start"
+                            MaximumWidthRequest="500"
                              Margin="8,0,0,0">
               
                 <CollectionView.ItemTemplate>
@@ -87,18 +88,13 @@
                 
             </CollectionView>
 
-                <Button  Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel"
-                        Command="{Binding SaveChangesCommand}"
-                        HorizontalOptions="Center" 
-                        WidthRequest="400" 
-                        Margin="8"
-                        Style="{StaticResource ButtonOutline}"/>
+               
             </VerticalStackLayout>
             
                 
-            <CollectionView Grid.Row="1" Grid.Column="1"
+            <CollectionView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
                              ItemsSource="{Binding AvailableTags}" 
-                             ItemsLayout="VerticalList">
+                             ItemsLayout="VerticalList" MaximumHeightRequest="500">
                 <CollectionView.ItemTemplate>
                     <DataTemplate  x:DataType="model:Tag">
                         <Frame Style="{StaticResource ControlCardView}" Margin="2">
@@ -125,8 +121,26 @@
 
             </CollectionView>
 
-            
+            <HorizontalStackLayout Grid.Row="1" Grid.Column="2" Spacing="12"  HorizontalOptions="StartAndExpand" Margin="24,30" VerticalOptions="Start">
+                <Button  Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel"
+                        Command="{Binding SaveChangesCommand}"
+ 
+                        Style="{StaticResource ButtonOutline}"/>
 
+                <Button  Text="Cancel changes - go back" x:DataType="viewmodel:ImageDetailsViewModel"
+                        Command="{Binding CancelGoHomeCommand}"
+ 
+                        Style="{StaticResource ButtonOutline}"/>
+
+
+                <Button  Text="Delete image" x:DataType="viewmodel:ImageDetailsViewModel"
+                    Command="{Binding DeleteCommand}"
+               
+
+                        Style="{StaticResource ButtonOutline}" TextColor="Red"/>
+            </HorizontalStackLayout>
+            
+                
         </Grid>
     </ScrollView>
 </ContentPage>

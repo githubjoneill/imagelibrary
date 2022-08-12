@@ -1,4 +1,6 @@
-﻿using ImageLibrary.Data;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using ImageLibrary.Data;
+using ImageLibrary.Messages;
 using ImageLibrary.Services;
 using Microsoft.Maui.Networking;
 using System;
@@ -21,8 +23,9 @@ namespace ImageLibrary.ViewModel
         public TagsManageViewModel(TagService tagsService)
         {
             this.tagService = tagsService;
-            //getTagsCommand.Execute(this);
+           
             Task.Run(() => GetTagsAsync());
+            
         }
 
         public TagsManageViewModel()
@@ -128,8 +131,15 @@ namespace ImageLibrary.ViewModel
                 var existingMatch = (from t in this.Tags where t.Name.Equals(tagValue, StringComparison.OrdinalIgnoreCase) select t).FirstOrDefault();
                 if (existingMatch != null)
                 {
+
+                    //remove any ImageTag records first.
+                   
                     var newTag = await this.tagService.DeleteTag(tagValue);
-                    this.Tags.Remove(existingMatch);
+                    if (newTag !=0)
+                    {
+                        this.Tags.Remove(existingMatch);
+                    }
+                    
                 }
             }
             catch (Exception ex)

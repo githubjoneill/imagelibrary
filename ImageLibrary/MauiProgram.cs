@@ -33,7 +33,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TagsManageViewModel>();
 		builder.Services.AddTransient<TagsManagePage>();
 
-        builder.Services.AddSingleton<ImagesWithoutTags>();
+        builder.Services.AddTransient<ImagesWithoutTags>();
 
         return builder.Build();
 	}

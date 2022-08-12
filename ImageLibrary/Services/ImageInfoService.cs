@@ -287,14 +287,14 @@ public class ImageInfoService
     public async Task<List<ImageTag>> GetImageTagIdsForImageId(int imageId)
     {
         ImagesDatabase database = await ImagesDatabase.Instance;
-        return await  database.GetImageItemTagIdsAsync(imageId);
+        return await  database.GetImageTagsFromImageIdAsync(imageId);
 
     }
 
     public async Task<int> AddImageTagAsync (ImageTag imgTag)
     {
         ImagesDatabase database = await ImagesDatabase.Instance;
-        var existingIds = await database.GetImageItemTagIdsAsync (imgTag.ImageId);
+        var existingIds = await database.GetImageTagsFromImageIdAsync (imgTag.ImageId);
         var matchExisting = (from t in existingIds where t.ImageId == imgTag.ImageId && t.TagId == imgTag.TagId select t).FirstOrDefault();
 
         if (matchExisting != null)
@@ -311,7 +311,7 @@ public class ImageInfoService
     public async Task<int> RemoveImageTagAsync(ImageTag imgTag)
     {
         ImagesDatabase database = await ImagesDatabase.Instance;
-        var existingIds = await database.GetImageItemTagIdsAsync(imgTag.ImageId);
+        var existingIds = await database.GetImageTagsFromImageIdAsync(imgTag.ImageId);
         var matchExisting = (from t in existingIds where t.ImageId == imgTag.ImageId && t.TagId == imgTag.TagId select t).FirstOrDefault();
 
         if (matchExisting == null)
@@ -342,7 +342,7 @@ public class ImageInfoService
         List<Tag> assignedTags = new();
        // imageObject = new FullyLoadedImageObject(imgOnly, allTags);
 
-        var tagIdsForThisImage = await database.GetImageItemTagIdsAsync(id);
+        var tagIdsForThisImage = await database.GetImageTagsFromImageIdAsync(id);
 
         if (tagIdsForThisImage?.Count > 0)
         {

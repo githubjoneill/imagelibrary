@@ -173,11 +173,19 @@ namespace ImageLibrary.Data
         }
 
 
-        public Task<List<ImageTag>> GetImageItemTagIdsAsync(int imageId)
+        public Task<List<ImageTag>> GetImageTagsFromImageIdAsync(int imageId)
         {
            
 
            var reply = Database.Table<ImageTag>().Where(i => i.ImageId == imageId).ToListAsync();
+
+
+            return reply;
+        }
+
+        public Task<List<ImageTag>> GetImageTagsFromTagIdAsync(int tagId)
+        {
+            var reply = Database.Table<ImageTag>().Where(i => i.TagId == tagId).ToListAsync();
 
 
             return reply;
