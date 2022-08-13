@@ -54,7 +54,7 @@
                 
                 <CollectionView 
                              ItemsSource="{Binding Tags}" 
-                             ItemsLayout="HorizontalList" 
+                             ItemsLayout="VerticalList" 
                             VerticalOptions="Start"
                             MaximumWidthRequest="500"
                              Margin="8,0,0,0">

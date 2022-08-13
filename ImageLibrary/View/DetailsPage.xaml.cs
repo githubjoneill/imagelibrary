@@ -14,7 +14,7 @@ public partial class DetailsPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        if (_vm !=null)
+        if (_vm !=null && _vm.FullyLoadedImage !=null)
         {
             _vm.AvailableTags = _vm.FullyLoadedImage.AvailableTags;
             _vm.Tags = _vm.FullyLoadedImage.AssignedTags; 

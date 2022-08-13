@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ImageLibrary.View.TagsAssignPage"
+              xmlns:model="clr-namespace:ImageLibrary.Model"
+              xmlns:viewmodel="clr-namespace:ImageLibrary.ViewModel"
+             x:DataType="viewmodel:ImageInfoViewModel"
+             Title="Tags Assignment">
+    <ScrollView>
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" Margin="8">
+
+
+            <HorizontalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,40" >
+
+                <Image
+                Grid.Column="0"
+                Source="tags.png"
+                SemanticProperties.Description="Tags image"
+                HeightRequest="50"
+                HorizontalOptions="Center" />
+
+                <Label 
+                Text="Tag Multiple Files"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="28"
+                HorizontalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Label Text="Assgined Tags" Grid.Row="1" Grid.Column="0"  Style="{StaticResource LargeLabel}" />
+
+            <Label Text="Available Tags" Grid.Row="1" Grid.Column="1" Style="{StaticResource LargeLabel}" />
+
+            <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                <Entry Text="{Binding TagAddedText}" ClearButtonVisibility="WhileEditing" Placeholder="Enter new or existing tag value." PlaceholderColor="LightGray"
+                           TextTransform="Lowercase"
+                           ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=EnterNewTagTextCommand}"
+                           ReturnCommandParameter="{Binding TagAddedText}" MinimumWidthRequest="90" MaximumWidthRequest="200"
+                            Margin="8,0,0,8" HorizontalOptions="Start"
+                           />
+                <CollectionView 
+                             ItemsSource="{Binding TagsAssigned}" 
+                             ItemsLayout="VerticalList" 
+                            VerticalOptions="Start"
+                            MaximumWidthRequest="500"
+                             Margin="8,0,0,0">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate  x:DataType="model:Tag">
+                         
+                            <Frame Style="{StaticResource ControlCardView}" Margin="2" >
+                                <HorizontalStackLayout Spacing="4">
+
+                                    <Label
+                                Margin="6"
+                                Style="{StaticResource MediumLabel}"
+                                Text="{Binding Name}"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Start" />
+
+                                    <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="16" WidthRequest="16"
+                                 Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,6,0"
+                                 Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=RemoveTagCommand}"
+                                 CommandParameter="{Binding  .}" />
+
+                                </HorizontalStackLayout>
+                            </Frame>
+
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8" Margin="0,30">
+                    <Button  Text="Save changes" x:DataType="viewmodel:ImageInfoViewModel"
+                        Command="{Binding SaveSelctedTagChangesCommand}"
+ 
+                        Style="{StaticResource ButtonOutline}"/>
+
+                    <Button  Text="Cancel changes" x:DataType="viewmodel:ImageInfoViewModel"
+                        Command="{Binding CancelGoHomeCommand}"
+ 
+                        Style="{StaticResource ButtonOutline}"/>
+
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                <CollectionView 
+                             ItemsSource="{Binding TagsAvailable}" 
+                             ItemsLayout="VerticalList" MaximumHeightRequest="500">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate  x:DataType="model:Tag">
+                            <Frame Style="{StaticResource ControlCardView}" Margin="2">
+                                <HorizontalStackLayout Spacing="6" Margin="2" >
+                                    <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18"
+                                     Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2,0,2,0"
+                                     Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=AddTagCommand}"
+                                     CommandParameter="{Binding .}" />
+                                    <Label
+                                    Margin="0,0,5,4"
+                                    Style="{StaticResource MediumLabel}"
+                                    Text="{Binding Name}"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Start"
+                                    />
+
+
+
+
+                                </HorizontalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+            </VerticalStackLayout>
+
+
+            <Label Style="{StaticResource MicroLabel}" Grid.Row="0" Grid.Column="2" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Apply to: {0} files'}" />
+
+           
+        </Grid>
+        
+        
+    </ScrollView>
+</ContentPage>

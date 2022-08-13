@@ -34,6 +34,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TagsManagePage>();
 
         builder.Services.AddTransient<ImagesWithoutTags>();
+		builder.Services.AddTransient<TagsAssignPage>();
 
         return builder.Build();
 	}

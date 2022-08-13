@@ -112,7 +112,7 @@
 
             <Button
             Margin="8"
-            Command="{Binding GetImagesCommand}"
+            Command="{Binding TagSelectedImagesCommand}"
             IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
             Style="{StaticResource ButtonOutline}"
             Text="Tag selected images" />

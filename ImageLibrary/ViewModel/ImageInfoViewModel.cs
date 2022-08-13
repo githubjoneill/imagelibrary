@@ -1,34 +1,50 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Maui.Core.Extensions;
+using CommunityToolkit.Mvvm.Messaging;
 using ImageLibrary.Data;
 using ImageLibrary.Messages;
+using ImageLibrary.Model;
 using ImageLibrary.Services;
+using ImageLibrary.View;
+
 //using Java.Security;
 //using ImageLibrary.View;
 
 namespace ImageLibrary.ViewModel;
 
-
+[QueryProperty(nameof(TagMultiAssignments), "TagMultiAssignments")]
 
 public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageMessage>, IRecipient<ChangedImageMessage>
 {
 
-    
+  
+
     public ObservableCollection<ImageFileInfo> ImageFiles { get; } = new();
 
-    public ObservableCollection<ImageFileInfo> UntaggedImageFiles { get; } = new();
+    //public ObservableCollection<ImageFileInfo> UntaggedImageFiles { get; } = new();
+    [ObservableProperty]
+    ObservableCollection<ImageFileInfo> untaggedImageFiles;
+
+    [ObservableProperty]
+    ObservableCollection<Tag> tagsAssigned;
+
+    [ObservableProperty]
+    ObservableCollection<Tag> tagsAvailable;
+
 
 
     public List<Object> SelectedImageFiles { get; set; } = new();
 
     ImageInfoService imageInfoService;
+    TagService tagService;
     IConnectivity connectivity;
 
-    public ImageInfoViewModel(ImageInfoService infoService, IConnectivity connectivity)
+    public ImageInfoViewModel(ImageInfoService infoService, TagService tagSvc, IConnectivity connectivity)
     {
         Title = "Image Library";
         this.imageInfoService = infoService;
+        this.tagService = tagSvc;
         this.connectivity = connectivity;
-
+        
         Task.Run(() => GetImagesAsync());
 
         WeakReferenceMessenger.Default.Register<DeletedImageMessage>(this);
@@ -54,6 +70,12 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
 
     [ObservableProperty]
     string resultsInfo  ;
+
+    [ObservableProperty]
+    string tagAddedText;
+
+    [ObservableProperty]
+    TagMultiAssignments tagMultiAssignments;
 
     [RelayCommand]
     async Task GetImagesAsync()
@@ -495,6 +517,84 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
     }
 
     [RelayCommand]
+    async Task TagSelectedImages()
+    {
+        if (this.SelectedImageFiles is null || SelectedImageFiles.Count ==0)
+        {
+            return;
+        }
+        try
+        {
+            TagsAvailable = new ObservableCollection<Tag>();
+            TagsAssigned = new ObservableCollection<Tag>();
+
+            var tags = await tagService.GetTags();
+            if (tags?.Count > 0)
+            {
+                foreach (var tag in tags.Where(t => t != null))
+                {
+                    TagsAvailable.Add(tag);
+                }
+            }
+
+            // Logic to move tags from AvailableTags list to assigned Tags list if any tags are present in ALL selected files
+            List<int> commonTagIds = new();
+            List<ImageTag> allAssignedImageTags = new();
+            foreach (var obj in SelectedImageFiles)
+            {
+                ImageFileInfo img = obj as ImageFileInfo;
+                var tagsForImage = await imageInfoService.GetImageTagIdsForImageId(img.ID);
+                if (tagsForImage != null && tagsForImage.Count > 0)
+                {
+                    allAssignedImageTags.AddRange(tagsForImage);
+
+                    var tagids = (from t in tagsForImage select t.TagId).ToList();
+                    commonTagIds.AddRange(tagids.Where(x => !commonTagIds.Contains(x)));
+                }
+            }
+
+            //loop through all distinct tagIds.  If any apply to all selected files, remove that tag from the TagsAvailable list and add to the TagsAssigned list.
+            if (commonTagIds?.Count > 0)
+            {
+                foreach (var tagId in commonTagIds)
+                {
+                    var filesCountWithThisTag = (from f in allAssignedImageTags where f.TagId == tagId select f).Count();
+                    if (filesCountWithThisTag == SelectedImageFiles.Count)
+                    {
+                        var commonTag = (from t in TagsAvailable where t.ID == tagId select t).FirstOrDefault();
+                        if (TagsAssigned is null)
+                        {
+                            TagsAssigned = new ObservableCollection<Tag>();
+                        }
+                        TagsAssigned.Add(commonTag);
+                        TagsAvailable.Remove(commonTag);
+                    }
+                }
+            }
+
+            TagMultiAssignments tma = new TagMultiAssignments();
+            foreach (var obj in SelectedImageFiles)
+            {
+                ImageFileInfo img = obj as ImageFileInfo;
+                tma.images.Add(img);
+            }
+            tma.tagsAssigned = TagsAssigned.ToList();
+            tma.tagsAvailable = TagsAvailable.ToList();
+
+            // End of block to move any availableTags to assigned tags
+            await Shell.Current.GoToAsync(nameof(TagsAssignPage), true, new Dictionary<string, object>
+                {
+                    {"TagMultiAssignments", tma }
+                });
+        }
+        catch (Exception ex)
+        {
+           await Shell.Current.DisplayAlert("Can't assign tags", ex.Message, "OK");
+        }
+       
+    }
+
+    [RelayCommand]
     async Task GoToDetailsFromId(int imageFileId)
     {
         if (imageFileId == 0)
@@ -506,13 +606,160 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
         {
             {"FullyLoadedImage", loadedImageInfo }
         });
-
-
     }
 
-    private bool CanAddFile()
+    [RelayCommand]
+    async Task EnterNewTagText(string newTagText)
     {
-        return true;
+        if (string.IsNullOrEmpty(this.TagAddedText))
+        {
+            return;
+        }
+
+        this.IsBusy = true;
+
+        try
+        {
+            if (TagsAvailable is null)
+            {
+                TagsAvailable = new ObservableCollection<Tag>();
+            }
+            if (TagsAssigned is null)
+            {
+                TagsAssigned = new ObservableCollection<Tag>();
+            }
+            var matchedTag = (from t in TagsAvailable where t.Name.Equals(TagAddedText, StringComparison.OrdinalIgnoreCase) select t).FirstOrDefault();
+            if (matchedTag == null)
+            {
+                // Create a new tag and save it to db /local observable collection.
+                var thisNewTag = await tagService.AddTag(newTagText);
+                if (thisNewTag != null && thisNewTag.ID > 0)
+                {
+                    TagsAssigned.Add(thisNewTag);
+                }
+            }
+            else
+            {
+                AddTag(matchedTag);
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        finally
+        {
+            TagAddedText = null;
+            this.IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    void AddTag(Tag tag)//async Task
+    {
+        // await Task.Delay(1);
+       TagsAssigned.Add(tag);//
+
+        TagsAvailable.Remove(tag);
+    }
+
+    [RelayCommand]
+    void RemoveTag(Tag tag)
+    {
+        TagsAvailable.Add(tag);
+        TagsAvailable = TagsAvailable.OrderBy(a => a.Name).ToObservableCollection();
+
+        TagsAssigned.Remove(tag);
+    }
+
+    [RelayCommand]
+    async Task SaveSelctedTagChanges()
+    {
+        try
+        {
+            var loadedObj = this.tagMultiAssignments;
+            if (loadedObj==null || loadedObj.images?.Count ==0)
+            {
+                return;
+            }
+
+            foreach (var imageFile in loadedObj.images)
+            {
+                var existingTagIds = await imageInfoService.GetImageTagIdsForImageId(imageFile.ID);
+                if (TagsAssigned?.Count >0)
+                {
+                    foreach (var thisTag in TagsAssigned.Where(t=> t !=null))
+                    {
+                        var matchExisting = (from e in existingTagIds where e.TagId == thisTag.ID select e).FirstOrDefault();
+                        if (matchExisting is null)
+                        {
+                            ImageTag newImgTag = new ImageTag() { ImageId = imageFile.ID, TagId = thisTag.ID };
+                            var idUpdated = await imageInfoService.AddImageTagAsync(newImgTag);
+                        }
+                    }
+                }
+            }
+            //if (this.TagsAssigned?.Count > 0)
+            //{
+
+            //}
+            //var img = fullyLoadedImage.ImageFileInfo;
+            //var updatedId = await imageInfoService.UpdateImage(img);
+            //WeakReferenceMessenger.Default.Send(new ChangedImageMessage(fullyLoadedImage.ImageFileInfo));
+
+            //var existingTagIds = await imageInfoService.GetImageTagIdsForImageId(fullyLoadedImage.ImageFileInfo.ID);
+
+            //if (Tags?.Count > 0)//fullyLoadedImage.Tags?.Count
+            //{
+            //    foreach (var thisTag in Tags.Where(t => t != null))//fullyLoadedImage.
+            //    {
+            //        ImageTag matchExisting = null;
+            //        if (existingTagIds?.Count > 0)
+            //        {
+            //            matchExisting = (from t in existingTagIds where t.TagId == thisTag.ID select t).FirstOrDefault();
+            //        }
+
+            //        if (matchExisting is null)
+            //        {
+            //            ImageTag newImgTag = new ImageTag() { ImageId = fullyLoadedImage.ImageFileInfo.ID, TagId = thisTag.ID };
+            //            var idUpdated = await imageInfoService.AddImageTagAsync(newImgTag);
+            //        }
+            //    }
+            //}
+
+            ////Check for removed tags
+            //if (existingTagIds != null)
+            //{
+            //    foreach (ImageTag existingItem in existingTagIds)
+            //    {
+            //        var matchExisting = (from t in Tags where t != null && t.ID == existingItem.TagId select t).FirstOrDefault();//fullyLoadedImage.
+            //        if (matchExisting is null)
+            //        {
+            //            //Remove from db.
+            //            var idDeleted = await imageInfoService.RemoveImageTagAsync(existingItem);
+            //        }
+            //    }
+            //}
+
+            //if (updatedId > 0)
+            //{
+         await Shell.Current.GoToAsync("..");
+            //}
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to load image information {ex.Message}");
+            await Shell.Current.DisplayAlert("Error, no Maps app!", ex.Message, "OK");
+
+        }
+    }
+
+    [RelayCommand]
+    void CancelGoHome()
+    {
+        Shell.Current.GoToAsync("..");
     }
 
     void IRecipient<DeletedImageMessage>.Receive(DeletedImageMessage message)
@@ -531,10 +778,13 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
             var changedImage = message.Value;
             var imgInCollection = (from i in this.ImageFiles where i.ID== changedImage.ID select i).FirstOrDefault();
 
-            if (imgInCollection !=null)
+            //imgInCollection = changedImage;
+            //OnPropertyChanged(nameof(imgInCollection));
+            //OnPropertyChanged(nameof(ImageFiles));
+            if (imgInCollection != null)
             {
                 ImageFiles.Remove(imgInCollection);
-                
+
             }
 
             ImageFiles.Add(changedImage);
