@@ -101,6 +101,19 @@ namespace ImageLibrary.Data
             return await Task.Run(() => replyList);
         }
 
+        public async Task<List<ImageFileInfo>> GetImagesWithNoTagsAsync()
+        {
+            //var images = await Database.Table<ImageFileInfo>().ToListAsync();
+            //var imageIds = (from t in images select t.ID).ToArray();
+            var imageTags = await Database.Table<ImageTag>().ToListAsync();
+            var taggedImageIds = (from t in imageTags select t.ImageId).ToArray();
+
+            var recs = await Database.Table<ImageFileInfo>().Where(it => !taggedImageIds.Contains(it.ID)).ToListAsync();
+
+            return recs;
+            //return await Task.Run(() => recs);
+        }
+
 
         public Task<int> GetTotalImagesCountAsync()
         {

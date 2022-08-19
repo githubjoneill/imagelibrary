@@ -32,7 +32,7 @@
     </ContentPage.Resources>
     <ScrollView>
         <Grid Margin="8,0"
-            RowDefinitions="Auto,Auto,Auto,Auto,*,*"
+            RowDefinitions="Auto,Auto,Auto,Auto"
             ColumnDefinitions="*,*"
             VerticalOptions="Start">
 
@@ -54,7 +54,7 @@
          
 
            
-            <HorizontalStackLayout Spacing="5" Grid.Row="2" Margin="0,0,60,0">
+            <HorizontalStackLayout Spacing="5" Grid.Row="1" Margin="0,20,60,0">
                 <Entry 
                        x:Name="entryBox" 
                        WidthRequest="250"
@@ -79,19 +79,19 @@
            
 
             <CollectionView
-                Grid.Row="5"
-                
+                Grid.Row="2"
+                Margin="0,30"
                 ItemsSource="{Binding Tags}"
                  SelectionMode="Single"
                
                 HorizontalOptions="Start"
-                
+              MaximumHeightRequest="600"
                 >
                 <CollectionView.ItemTemplate>
 
 
                     <DataTemplate  x:DataType="model:Tag" >
-                        <Frame Style="{StaticResource ControlCardView}" >
+                        <Frame Style="{StaticResource ControlCardView}" Margin="0,4,0,4" Padding="6" >
                             <HorizontalStackLayout Spacing="4">
 
                                 <Label
@@ -106,7 +106,7 @@
                                     Style="{StaticResource SmallLabel}" TextColor="LightSlateGray"
                                     VerticalOptions="Center" />
 
-                                <ImageButton VerticalOptions="Start" HorizontalOptions="EndAndExpand" Margin="8,0,6,0" HeightRequest="16" WidthRequest="16"
+                                <ImageButton VerticalOptions="Start" HorizontalOptions="EndAndExpand"  Background="Transparent"
                             Source="close_icon_black.png" BorderColor="Transparent" 
                             Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:TagsManageViewModel}}, Path=RemoveTagCommand}"
                             CommandParameter="{Binding  Name}" />
@@ -124,7 +124,7 @@
 
 
             <ActivityIndicator
-            Grid.RowSpan="5"
+            Grid.RowSpan="3"
             HorizontalOptions="FillAndExpand"
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}"

@@ -32,15 +32,16 @@
 
     </ContentPage.Resources>
     <Grid
+        BackgroundColor="{StaticResource Yellow400Accent}"
         ColumnDefinitions="*,*"
         ColumnSpacing="5"
         RowDefinitions="Auto,*,Auto"
         RowSpacing="0">
         <HorizontalStackLayout HorizontalOptions="Start" Spacing="10" Grid.ColumnSpan="2">
-            <SearchBar Placeholder="Search images by name or tag" 
+            <SearchBar Placeholder="Search by name or tag" MinimumWidthRequest="300"
                    x:Name="searchBar"
-                   Margin="8,0,0,0"
-                   HorizontalOptions="Start" MinimumWidthRequest="300"
+                   Margin="8,0,0,0" PlaceholderColor="Silver" 
+                   HorizontalOptions="FillAndExpand" 
                    SearchCommand="{Binding SearchImagesCommand}"
                    SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
                     
@@ -108,7 +109,7 @@
             Text="Add image(s)"
             Command="{Binding AddImageCommand}"
                 Style="{StaticResource ButtonOutline}"
-             />
+             ImageSource="add_icon.png" />
 
             <Button
             Margin="8"
@@ -117,12 +118,6 @@
             Style="{StaticResource ButtonOutline}"
             Text="Tag selected images" />
 
-            <Button
-            Margin="8"
-            Command="{Binding DeleteSelectedImagesCommand}"
-            IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
-            Style="{StaticResource ButtonOutline}"
-            Text="Delete selected image files" />
 
             <Button
             Margin="8"
@@ -130,6 +125,16 @@
             IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
             Style="{StaticResource ButtonOutline}"
             Text="Remove from library" />
+            
+            <Button
+            Margin="8"
+            Command="{Binding DeleteSelectedImagesCommand}"
+            IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Delete selected files" 
+            ImageSource="delete_trash_black.png"  />
+                
+
 
         </HorizontalStackLayout>
        

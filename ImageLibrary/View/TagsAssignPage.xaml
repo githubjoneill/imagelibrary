@@ -57,8 +57,8 @@
                                 VerticalOptions="Center"
                                 HorizontalOptions="Start" />
 
-                                    <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="16" WidthRequest="16"
-                                 Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,6,0"
+                                    <ImageButton VerticalOptions="Start"  Background="Transparent"
+                                 Source="close_icon_black.png" BorderColor="Transparent" Margin="6,4,2,4"
                                  Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=RemoveTagCommand}"
                                  CommandParameter="{Binding  .}" />
 
@@ -93,7 +93,7 @@
                         <DataTemplate  x:DataType="model:Tag">
                             <Frame Style="{StaticResource ControlCardView}" Margin="2">
                                 <HorizontalStackLayout Spacing="6" Margin="2" >
-                                    <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18"
+                                    <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18" Background="Transparent"
                                      Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2,0,2,0"
                                      Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageInfoViewModel}}, Path=AddTagCommand}"
                                      CommandParameter="{Binding .}" />
@@ -118,7 +118,7 @@
             </VerticalStackLayout>
 
 
-            <Label Style="{StaticResource MicroLabel}" Grid.Row="0" Grid.Column="2" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Apply to: {0} files'}" />
+            <!--<Label Style="{StaticResource MicroLabel}" Grid.Row="0" Grid.Column="2" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Apply to: {0} files'}" />-->
 
            
         </Grid>

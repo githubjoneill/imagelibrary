@@ -18,13 +18,13 @@
                 ContentTemplate="{DataTemplate view:MainPage}"
                 Route="MainPage" />
         </Tab>
-        <Tab Title="Images without tags" Icon="dotnet_bot.png">
+        <Tab Title="Lisings by tag" Icon="dotnet_bot.png">
             <ShellContent
                 Shell.NavBarIsVisible="true"
             
-                Title="Images without tags"
-                ContentTemplate="{DataTemplate view:ImagesWithoutTags}"
-                Route="ImagesWithoutTags" />
+                Title="Browse by tag"
+                ContentTemplate="{DataTemplate view:BrowseByTagPage}"
+                Route="BrowseByTagPage" />
         </Tab>
         <Tab Title="Tags" Icon="tags.png">
               <ShellContent

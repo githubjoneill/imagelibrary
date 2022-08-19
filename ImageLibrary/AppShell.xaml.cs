@@ -12,7 +12,7 @@ public partial class AppShell : Shell
 
 		Routing.RegisterRoute(nameof(TagsManagePage), typeof(TagsManagePage));
 
-		Routing.RegisterRoute(nameof(ImagesWithoutTags), typeof(ImagesWithoutTags));
+		Routing.RegisterRoute(nameof(BrowseByTagPage), typeof(BrowseByTagPage));
 
 		Routing.RegisterRoute(nameof(TagsAssignPage), typeof(TagsAssignPage));
 

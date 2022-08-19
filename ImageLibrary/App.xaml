@@ -12,6 +12,11 @@
         </ResourceDictionary>-->
 
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
             <Color x:Key="Primary">#FFC107</Color>
             <Color x:Key="PrimaryDark">#FFA000</Color>
             <Color x:Key="Accent">#00BCD4</Color>
@@ -106,10 +111,10 @@
                 <Setter Property="HasShadow" Value="True" />
                 <Setter Property="MaximumWidthRequest" Value="670" />
                
-                <Setter Property="Padding" Value="6,4,6,6" />
-                <Setter Property="Background" Value="{StaticResource DisabledColor}" />
+                <Setter Property="Padding" Value="2" />
+                <Setter Property="Background" Value="{StaticResource WhiteHaze}" />
                 <Setter Property="BackgroundColor" Value ="{StaticResource DisabledColor}" />
-                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="CornerRadius" Value="6" />
                 <Setter Property="IsClippedToBounds" Value="True"/>
                 
             </Style>

@@ -78,6 +78,10 @@ public partial class ImageDetailsViewModel: BaseViewModel
                     {
                         ImageTag newImgTag = new ImageTag() { ImageId = fullyLoadedImage.ImageFileInfo.ID, TagId = thisTag.ID };
                       var idUpdated = await imageInfoService.AddImageTagAsync(newImgTag);
+                        if (idUpdated >0)
+                        {
+                            WeakReferenceMessenger.Default.Send(new ChangedImageTagMessage(newImgTag));
+                        }
                     }
                 }
             }
@@ -92,6 +96,11 @@ public partial class ImageDetailsViewModel: BaseViewModel
                     {
                         //Remove from db.
                         var idDeleted = await imageInfoService.RemoveImageTagAsync(existingItem);
+                        if (idDeleted > 0)
+                        {
+                            WeakReferenceMessenger.Default.Send(new DeletedImageTagMessage(existingItem));
+                        }
+
                     }
                 }
             }
@@ -145,7 +154,7 @@ public partial class ImageDetailsViewModel: BaseViewModel
     [RelayCommand]
      void AddTag(Tag tag)//async Task
     {
-       // await Task.Delay(1);
+       
         Tags.Add(tag);//
 
         AvailableTags.Remove(tag);

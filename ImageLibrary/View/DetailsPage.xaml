@@ -50,79 +50,88 @@
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
-            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                
-                <CollectionView 
+            <VerticalStackLayout Grid.Row="1" Grid.Column="0" >
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" HorizontalOptions="FillAndExpand" Margin="8">
+                    <Label Text="Assgined tags" Grid.Row="0" Grid.Column="0"  Style="{StaticResource MediumLabel}" TextColor="{StaticResource Gray400}"/>
+
+                    <Label Text="Available tags" Grid.Row="0" Grid.Column="1" Style="{StaticResource MediumLabel}" HorizontalOptions="End" TextColor="{StaticResource Gray400}" Margin="0,0,20,0"/>
+
+                    <CollectionView Grid.Row="1" Grid.Column="0"
                              ItemsSource="{Binding Tags}" 
                              ItemsLayout="VerticalList" 
                             VerticalOptions="Start"
                             MaximumWidthRequest="500"
                              Margin="8,0,0,0">
-              
-                <CollectionView.ItemTemplate>
-                    <DataTemplate  x:DataType="model:Tag">
-                        <!--<Card:ImageTagCard  HorizontalOptions="Start" />-->
-                        <!--<Label Text="{Binding Name}" VerticalOptions="Start" HorizontalOptions="Start" />-->
-                      
-                        <Frame Style="{StaticResource ControlCardView}" >
-                        <HorizontalStackLayout Spacing="4">
 
-                            <Label
-                                Margin="6"
-                                Style="{StaticResource MediumLabel}"
-                                Text="{Binding Name}"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Start" />
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate  x:DataType="model:Tag">
+                                <!--<Card:ImageTagCard  HorizontalOptions="Start" />-->
+                                <!--<Label Text="{Binding Name}" VerticalOptions="Start" HorizontalOptions="Start" />-->
 
-                             <ImageButton VerticalOptions="Start" HorizontalOptions="End" HeightRequest="16" WidthRequest="16"
-                                 Source="close_icon_black.png" BorderColor="Transparent" Margin="0,0,6,0"
-                                 Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=RemoveTagCommand}"
-                                 CommandParameter="{Binding  .}" />
+                                <Frame Style="{StaticResource ControlCardView}" Margin="2" >
+                                    <HorizontalStackLayout Spacing="0">
 
-                            </HorizontalStackLayout>            
-                        </Frame>
-                      
-                       
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                
-            </CollectionView>
+                                        <Label
+                                        Margin="6"
+                                        Style="{StaticResource MediumLabel}"
+                                        Text="{Binding Name}"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Start" />
 
-               
-            </VerticalStackLayout>
-            
-                
-            <CollectionView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+                                        <ImageButton HorizontalOptions="End" Background="Transparent" 
+                                         Source="close_icon_black.png" BorderColor="Transparent" Margin="6,4,2,4"
+                                         Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=RemoveTagCommand}"
+                                         CommandParameter="{Binding  .}" />
+
+                                    </HorizontalStackLayout>
+                                </Frame>
+
+
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+
+
+                    <CollectionView Grid.Row="1" Grid.Column="1" HorizontalOptions="End"
                              ItemsSource="{Binding AvailableTags}" 
-                             ItemsLayout="VerticalList" MaximumHeightRequest="500">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate  x:DataType="model:Tag">
-                        <Frame Style="{StaticResource ControlCardView}" Margin="2">
-                            <HorizontalStackLayout Spacing="6" Margin="2" >
-                                <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18"
-                                     Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2,0,2,0"
+                             ItemsLayout="VerticalList" MaximumHeightRequest="400">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate  x:DataType="model:Tag">
+                                <Frame Style="{StaticResource ControlCardView}" Margin="2">
+                                    <HorizontalStackLayout Spacing="6" Margin="4" >
+                                        <ImageButton VerticalOptions="Start" HorizontalOptions="Start" HeightRequest="18" WidthRequest="18" Background="Transparent"
+                                     Source="arrow_icon_left_green.png" BorderColor="Transparent" Margin="2"
                                      Command="{ Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageDetailsViewModel}}, Path=AddTagCommand}"
                                      CommandParameter="{Binding .}" />
-                                <Label
-                                    Margin="0,0,5,4"
+                                        <Label
+                                    Margin="0,4,5,2"
                                     Style="{StaticResource MediumLabel}"
                                     Text="{Binding Name}"
                                     VerticalOptions="Center"
                                     HorizontalOptions="Start"
                                     />
-                                
 
 
 
-                            </HorizontalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
 
-            </CollectionView>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+                </Grid>
+               
+
+               
+            </VerticalStackLayout>
+            
+                
+           
 
             <HorizontalStackLayout Grid.Row="1" Grid.Column="2" Spacing="12"  HorizontalOptions="StartAndExpand" Margin="24,30" VerticalOptions="Start">
-                <Button  Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel"
+                <Button  Text="Save changes" x:DataType="viewmodel:ImageDetailsViewModel" ImageSource="save_disk.png" Background="{StaticResource Yellow400Accent}"
                         Command="{Binding SaveChangesCommand}"
  
                         Style="{StaticResource ButtonOutline}"/>
@@ -133,7 +142,7 @@
                         Style="{StaticResource ButtonOutline}"/>
 
 
-                <Button  Text="Delete image" x:DataType="viewmodel:ImageDetailsViewModel"
+                <Button  Text="Delete image" x:DataType="viewmodel:ImageDetailsViewModel" ImageSource="delete_trash_black.png" Background="{StaticResource Red400Accent}"
                     Command="{Binding DeleteCommand}"
                
 

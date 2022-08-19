@@ -72,6 +72,14 @@ public class TagService
         return tagsForImageId ?? new List<ImageTag>();
     }
 
+    public async Task<List<ImageFileInfo>> GetImagesForTag(Tag tag)
+    {
+        ImagesDatabase db = await ImagesDatabase.Instance;
+
+        return  await db.GetImageItemByTagAsync(tag);
+        
+    }
+
     public async Task<List<ImageTag>> GetImageTagsForTagId(int tagId)
     {
 

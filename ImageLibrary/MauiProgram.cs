@@ -33,7 +33,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<TagsManageViewModel>();
 		builder.Services.AddTransient<TagsManagePage>();
 
-        builder.Services.AddTransient<ImagesWithoutTags>();
+        builder.Services.AddTransient<ImageTagGroupViewModel>();
+        builder.Services.AddTransient<BrowseByTagPage>();
+
 		builder.Services.AddTransient<TagsAssignPage>();
 
         return builder.Build();

@@ -2,12 +2,9 @@
 using CommunityToolkit.Mvvm.Messaging;
 using ImageLibrary.Data;
 using ImageLibrary.Messages;
-using ImageLibrary.Model;
 using ImageLibrary.Services;
 using ImageLibrary.View;
 
-//using Java.Security;
-//using ImageLibrary.View;
 
 namespace ImageLibrary.ViewModel;
 
@@ -15,14 +12,7 @@ namespace ImageLibrary.ViewModel;
 
 public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageMessage>, IRecipient<ChangedImageMessage>
 {
-
-  
-
     public ObservableCollection<ImageFileInfo> ImageFiles { get; } = new();
-
-    //public ObservableCollection<ImageFileInfo> UntaggedImageFiles { get; } = new();
-    [ObservableProperty]
-    ObservableCollection<ImageFileInfo> untaggedImageFiles;
 
     [ObservableProperty]
     ObservableCollection<Tag> tagsAssigned;
@@ -31,12 +21,28 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
     ObservableCollection<Tag> tagsAvailable;
 
 
+    private List<TagImageGroup> _imageTagGroup;
 
-    public List<Object> SelectedImageFiles { get; set; } = new();
 
-    ImageInfoService imageInfoService;
-    TagService tagService;
-    IConnectivity connectivity;
+    
+    public  List<TagImageGroup> ImageTagGroups
+    {
+        get {
+
+            if (_imageTagGroup ==null)
+            {
+                Task.Run(() => LoadTagGroupsAsync());
+                //		var tf  = new List<TagImageGroup>();
+                //		var grp = new TagImageGroup("Untagged", lstFiles);
+
+            }
+            
+            return _imageTagGroup; 
+        
+        
+        }
+        private set { _imageTagGroup = value; }
+    }
 
     public ImageInfoViewModel(ImageInfoService infoService, TagService tagSvc, IConnectivity connectivity)
     {
@@ -44,15 +50,60 @@ public partial class ImageInfoViewModel: BaseViewModel, IRecipient<DeletedImageM
         this.imageInfoService = infoService;
         this.tagService = tagSvc;
         this.connectivity = connectivity;
-        
+
         Task.Run(() => GetImagesAsync());
+
+        Task.Run(() => LoadTagGroupsAsync());
 
         WeakReferenceMessenger.Default.Register<DeletedImageMessage>(this);
         WeakReferenceMessenger.Default.Register<ChangedImageMessage>(this);
-      
+
         //this.SelectedImageFiles.CollectionChanged += SelectedImageFiles_CollectionChanged;
 
     }
+
+
+    private async Task LoadTagGroupsAsync()
+    {
+        _imageTagGroup = new List<TagImageGroup>();
+        var lstFiles = await imageInfoService.GetUntaggedImages();
+        if (lstFiles?.Count > 0)
+        {
+            var grp = new TagImageGroup("Untagged", lstFiles);
+            ImageTagGroups.Add(grp);
+        }
+       
+
+        var allTags = await tagService.GetTags();
+        if (allTags?.Count > 0)
+        {
+            foreach (var tag in allTags)
+            {
+
+                var images = await tagService.GetImagesForTag(tag);
+
+                //var imagesForThisTag =await tagService.GetImageTagsForImageId(tag.ID);
+                if (images?.Count > 0)
+                {
+                    //imageInfoService.GetImageTagIdsForImageId()
+                    ImageTagGroups.Add(new TagImageGroup(tag.Name, images));
+                }
+            }
+        }
+
+    }
+
+    //[ObservableProperty]
+    //ObservableCollection<TagImageGroup> tagGroups;
+    // ObservableCollection<string> tagFilters;
+
+    public List<Object> SelectedImageFiles { get; set; } = new();
+
+    internal ImageInfoService imageInfoService;
+    internal TagService tagService;
+    IConnectivity connectivity;
+
+  
 
     private void SelectedImageFiles_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {

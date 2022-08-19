@@ -66,12 +66,14 @@
 	  <None Remove="Resources\Images\add_icon.png" />
 	  <None Remove="Resources\Images\arrow_icon_left_green.png" />
 	  <None Remove="Resources\Images\close_icon_black.png" />
+	  <None Remove="Resources\Images\delete_trash_black.png" />
 	  <None Remove="Resources\Images\edit_pencil.svg" />
 	  <None Remove="Resources\Images\home.svg" />
 	  <None Remove="Resources\Images\ionislogo.png" />
 	  <None Remove="Resources\Images\listpencil.svg" />
 	  <None Remove="Resources\Images\savedisk.svg" />
 	  <None Remove="Resources\Images\save_add_icon.png" />
+	  <None Remove="Resources\Images\save_disk.png" />
 	  <None Remove="Resources\Images\searchmagnify.svg" />
 	  <None Remove="Resources\Images\superhero.png" />
 	  <None Remove="Resources\Images\tagdelete.svg" />
@@ -93,6 +95,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Cards\TagCard.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\BrowseByTagPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\DetailsPage.xaml">

@@ -170,6 +170,11 @@ public class ImageInfoService
 
     }
 
+    public async Task<List<ImageFileInfo>> GetUntaggedImages()
+    {
+        ImagesDatabase database = await ImagesDatabase.Instance;
+        return await database.GetImagesWithNoTagsAsync();
+    }
     private  string SvgFileToPng(string svgFilePath)
     {
         string replyPath = string.Empty;
@@ -276,6 +281,12 @@ public class ImageInfoService
         return idUpdated;
 
 
+    }
+
+    public async Task<ImageFileInfo> GetImageFromImageId (int imageId)
+    {
+        ImagesDatabase database = await ImagesDatabase.Instance;
+        return await database.GetImageItemAsync(imageId);
     }
     public async Task<int> GetImagesCount()
     {
