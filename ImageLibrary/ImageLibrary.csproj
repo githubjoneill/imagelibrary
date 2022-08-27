@@ -103,9 +103,6 @@
 	  <MauiXaml Update="View\DetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="View\ImagesWithoutTags.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="View\TagsAssignPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -39,59 +39,73 @@
         RowDefinitions="Auto,*,Auto"
         RowSpacing="0">
 
-       
 
-        <CollectionView Grid.Row="1" Grid.ColumnSpan="2" IsGrouped="True"
+        <RefreshView
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Command="{Binding RefreshImagesCommand}"
+            RefreshColor="Orange"
+            IsRefreshing="{Binding IsRefreshing}"
+            >
+
+            <CollectionView Grid.Row="1" Grid.ColumnSpan="2" IsGrouped="True"
                 ItemsSource="{Binding ImageTagGroups}"
                 SelectionMode="Multiple"
                 ItemsLayout="VerticalGrid, 5"
                 >
-            <CollectionView.GroupHeaderTemplate>
-                <DataTemplate x:DataType="model:TagImageGroup">
-                    <Frame HeightRequest="40" BackgroundColor="AliceBlue" BorderColor="Orange" Padding="2" CornerRadius="4" Margin="8" IsClippedToBounds="True" MinimumWidthRequest="100">
-                        <Label  Text="{Binding Name}"
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="model:TagImageGroup">
+                        <Frame IsClippedToBounds="False" CornerRadius="4" Padding="4" BackgroundColor="BlanchedAlmond">
+                            <Label  Text="{Binding Name}"
                            TextColor="Orange" Margin="0,0,12,0"
                            FontSize="18"
-                           FontAttributes="Italic" /> 
-                    </Frame>
-                    
-                </DataTemplate>
-            </CollectionView.GroupHeaderTemplate>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="model:ImageFileInfo">
-                    <Grid Padding="10">
-                        <Frame HeightRequest="125" Style="{StaticResource CardView}">
+                           FontAttributes="Italic" />
+                        </Frame>
 
-                            <Grid Padding="0" ColumnDefinitions="125,*">
-                                <Image
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:ImageFileInfo">
+                        <Grid Padding="10">
+                            <Frame HeightRequest="125" Style="{StaticResource CardView}">
+
+                                <Grid Padding="0" ColumnDefinitions="125,*">
+                                    <Image
                                         Margin="8"
                                         Aspect="AspectFit"
                                         MaximumHeightRequest="125"
                                         Source="{Binding Image}" 
                                         MaximumWidthRequest="125" >
 
-                                </Image>
-                                <VerticalStackLayout
+                                    </Image>
+                                    <VerticalStackLayout
                                         Grid.Column="1"
                                         VerticalOptions="Start"
                                         Padding="8">
-                                    <ImageButton VerticalOptions="Start" HorizontalOptions="End" WidthRequest="18"
+                                        <ImageButton VerticalOptions="Start" HorizontalOptions="End" WidthRequest="18"
                                              Source="edit_pencil.png" BorderColor="Transparent" Margin="0,0,8,0"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ImageTagGroupViewModel}}, Path=GoToDetailsFromIdCommand}"
                                             CommandParameter="{Binding ID}"/>
 
-                                    <Label Style="{StaticResource MediumLabel}" Text="{Binding Name}" />
+                                        <Label Style="{StaticResource MediumLabel}" Text="{Binding Name}" />
 
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Frame>
-                    </Grid>
-                </DataTemplate>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
 
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
 
 
-
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            HorizontalOptions="FillAndExpand"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="CenterAndExpand" />
     </Grid>
 </ContentPage>

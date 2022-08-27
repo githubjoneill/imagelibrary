@@ -63,6 +63,11 @@ public class TagService
 
     }
 
+
+    public  void ClearTagCache()
+    {
+        tagsList?.Clear();
+    }
     public async Task<List<ImageTag>> GetImageTagsForImageId(int imageId)
     {
 

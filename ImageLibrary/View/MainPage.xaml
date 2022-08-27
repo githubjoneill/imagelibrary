@@ -71,6 +71,7 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:ImageFileInfo">
+
                         <Grid Padding="10">
                             <Frame HeightRequest="125" Style="{StaticResource CardView}">
 
@@ -98,10 +99,12 @@
                                 </Grid>
                             </Frame>
                         </Grid>
+
                     </DataTemplate>
 
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
         </RefreshView>
         <HorizontalStackLayout Spacing="10" Grid.Row="2" Grid.ColumnSpan="2">
             <Button
@@ -125,7 +128,7 @@
             IsEnabled="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"
             Style="{StaticResource ButtonOutline}"
             Text="Remove from library" />
-            
+
             <Button
             Margin="8"
             Command="{Binding DeleteSelectedImagesCommand}"
@@ -133,11 +136,9 @@
             Style="{StaticResource ButtonOutline}"
             Text="Delete selected files" 
             ImageSource="delete_trash_black.png"  />
-                
-
 
         </HorizontalStackLayout>
-       
+
 
         <ActivityIndicator
             Grid.RowSpan="3"

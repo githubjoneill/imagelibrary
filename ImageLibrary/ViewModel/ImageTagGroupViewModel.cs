@@ -16,9 +16,6 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
     internal TagService tagService;
     IConnectivity connectivity;
 
-
-    //public ObservableCollection<ImageFileInfo> ImageFiles { get; } = new();
-
     [ObservableProperty]
     ObservableCollection<Tag> tagsAssigned;
 
@@ -29,26 +26,7 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
     ObservableCollection<TagImageGroup> imageTagGroups;
 
 
-    //private List<TagImageGroup> _imageTagGroup;
-
-    //public List<TagImageGroup> ImageTagGroups //= new List<TagImageGroup>();
-    //{
-    //    get
-    //    {
-
-    //        if (_imageTagGroup == null)
-    //        {
-    //            _imageTagGroup = new List<TagImageGroup>();
-    //          //  Task.Run(() => LoadTagGroupsAsync());
-
-    //        }
-
-    //        return _imageTagGroup;
-
-
-    //    }
-    //    private set { _imageTagGroup = value; }
-    //}
+   
 
     public ImageTagGroupViewModel(ImageInfoService infoService, TagService tagSvc, IConnectivity connectivity)
     {
@@ -57,23 +35,27 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
         this.tagService = tagSvc;
         this.connectivity = connectivity;
 
-       // Task.Run(() => GetImagesAsync());
-
         Task.Run(() => LoadTagGroupsAsync());
 
         WeakReferenceMessenger.Default.Register<DeletedImageMessage>(this);
         WeakReferenceMessenger.Default.Register<ChangedImageMessage>(this);
-
         WeakReferenceMessenger.Default.Register<ChangedImageTagMessage>(this);
 
     }
 
-  
 
+    [RelayCommand]
+    async Task RefreshImages()
+    {
+        IsRefreshing = true;
+        IsBusy = true;
+        tagService.ClearTagCache();
+        await LoadTagGroupsAsync();
+    }
 
     private async Task LoadTagGroupsAsync()
     {
-        IsRefreshing = true;
+        //IsRefreshing = true;
         IsBusy = true;
         try
         {
@@ -82,7 +64,7 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
                 ImageTagGroups = new ObservableCollection<TagImageGroup>();
             }
             ImageTagGroups.Clear();
-            //_imageTagGroup = new List<TagImageGroup>();
+
             var lstFiles = await imageInfoService.GetUntaggedImages();
             if (lstFiles?.Count > 0)
             {
@@ -94,15 +76,12 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
             var allTags = await tagService.GetTags();
             if (allTags?.Count > 0)
             {
-                foreach (var tag in allTags)
+                foreach (var tag in allTags.ToArray())
                 {
-
                     var images = await tagService.GetImagesForTag(tag);
 
-                    //var imagesForThisTag =await tagService.GetImageTagsForImageId(tag.ID);
                     if (images?.Count > 0)
                     {
-                        //imageInfoService.GetImageTagIdsForImageId()
                         ImageTagGroups.Add(new TagImageGroup(tag.Name, images));
                     }
                 }
@@ -115,22 +94,14 @@ public partial class ImageTagGroupViewModel : BaseViewModel, IRecipient<DeletedI
         }
         finally
         {
-            OnPropertyChanged(nameof(ImageTagGroups));
+           // OnPropertyChanged(nameof(ImageTagGroups));
             IsBusy = false;
             IsRefreshing = false;
         }
-      
-
-        IsRefreshing = false;
-
     }
 
-    //[ObservableProperty]
-    //ObservableCollection<TagImageGroup> imageTagGroups;
-
-    public List<Object> SelectedImageFiles { get; set; } = new();
-
    
+    public List<Object> SelectedImageFiles { get; set; } = new();
 
 
     [ObservableProperty]

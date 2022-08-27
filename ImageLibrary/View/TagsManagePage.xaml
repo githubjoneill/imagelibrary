@@ -25,17 +25,21 @@
             </Setter>
         </Style>
         <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
             <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
         </ResourceDictionary>
 
     </ContentPage.Resources>
-    <ScrollView>
-        <Grid Margin="8,0"
-            RowDefinitions="Auto,Auto,Auto,Auto"
+   
+        <ScrollView>
+       
+            <Grid Margin="8,0"
+            RowDefinitions="Auto,Auto,Auto"
             ColumnDefinitions="*,*"
             VerticalOptions="Start">
 
+            <!--Information header and image-->
             <HorizontalStackLayout Grid.Row="0" Spacing="8" >
 
                 <Image
@@ -51,10 +55,11 @@
                 FontSize="28"
                 HorizontalOptions="Center" />
             </HorizontalStackLayout>
-         
 
-           
-            <HorizontalStackLayout Spacing="5" Grid.Row="1" Margin="0,20,60,0">
+            <!--Allow user to add a new tag -->
+            <HorizontalStackLayout Spacing="5" Grid.Row="1" Margin="0,20,60,0"
+                                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                   >
                 <Entry 
                        x:Name="entryBox" 
                        WidthRequest="250"
@@ -67,31 +72,34 @@
                        ReturnCommand="{Binding AddTagCommand, Mode=TwoWay}"
                        ReturnCommandParameter="{Binding Source={x:Reference entryBox}, Path=Text}"
                        />
-                
+
                 <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding Tags.Count, StringFormat='Showing: {0} tags'}" />
-                
+
                 <Label Style="{StaticResource MicroLabel}" VerticalOptions="Center" Text="{Binding SelectionCount, StringFormat='Selected tags: {0}'}" 
                      IsVisible="{Binding SelectionCount, Converter={StaticResource IntToBoolConverter}}"/>
             </HorizontalStackLayout>
 
-
-
+           <!-- Main listing -->
+            <RefreshView  Grid.Row="2"
            
+                Command="{Binding RefreshTagsCommand}"
+                RefreshColor="Orange" VerticalOptions="Start"
+                IsRefreshing="{Binding IsRefreshing}">
+                <CollectionView
+                    Grid.Row="2"
+                    Margin="0,30"
+                    ItemsSource="{Binding Tags}"
+                     SelectionMode="Single"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start">
 
-            <CollectionView
-                Grid.Row="2"
-                Margin="0,30"
-                ItemsSource="{Binding Tags}"
-                 SelectionMode="Single"
-               
-                HorizontalOptions="Start"
-              MaximumHeightRequest="600"
-                >
-                <CollectionView.ItemTemplate>
+                    <CollectionView.ItemTemplate>
 
 
                     <DataTemplate  x:DataType="model:Tag" >
-                        <Frame Style="{StaticResource ControlCardView}" Margin="0,4,0,4" Padding="6" >
+                        <Frame Style="{StaticResource ControlCardView}" Margin="0,4,0,4" Padding="6"  >
+                              
                             <HorizontalStackLayout Spacing="4">
 
                                 <Label
@@ -100,7 +108,7 @@
                                     Text="{Binding Name}"
                                     VerticalOptions="Center"
                                     HorizontalOptions="Start" />
-                                
+
                                 <Label 
                                     Text="{Binding InstancesCount, StringFormat='({0})'}"
                                     Style="{StaticResource SmallLabel}" TextColor="LightSlateGray"
@@ -117,24 +125,24 @@
 
                     </DataTemplate>
 
-                </CollectionView.ItemTemplate>
-
-
-            </CollectionView>
-
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
 
             <ActivityIndicator
-            Grid.RowSpan="3"
+                Grid.Row="2"
+            Grid.RowSpan="1"
             HorizontalOptions="FillAndExpand"
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}"
-            VerticalOptions="CenterAndExpand" />
+            VerticalOptions="StartAndExpand" />
 
         </Grid>
 
-  
 
-        
+
+
     </ScrollView>
     
+
 </ContentPage>

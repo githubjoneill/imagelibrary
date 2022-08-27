@@ -52,6 +52,20 @@ namespace ImageLibrary.ViewModel
         }
 
         [RelayCommand]
+        public async Task RefreshTags()
+        {
+
+            tagService.ClearTagCache();
+            await GetTagsAsync();
+            //Simulate longer delay
+            //IsBusy = true;
+            //IsRefreshing = true;
+            //await Task.Delay(8000);
+            //IsRefreshing = false;
+            //IsBusy = false;
+        }
+
+        [RelayCommand]
         async Task GetTagsAsync()
         {
             if (IsBusy)
