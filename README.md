@@ -13,5 +13,5 @@ Text searches of the library will return any matches to file names, custom tags,
 - Optional notes associated with individual images are included in search results. 
 
 ## Using this application
- - Install from the Microsoft Store - Store name: 'My image library'
- - Start adding references to your existing images into the library and tagging those images.
+ - Install from the Microsoft app store [PC Images Library](https://www.microsoft.com/store/productId/9NPG62FW6L8Q)
+ - Start adding references to your existing images into the library and then tagging those images to help find them in your searches.
